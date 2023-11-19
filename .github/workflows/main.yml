@@ -32,7 +32,6 @@ jobs:
   deploy:
     runs-on: self-hosted    
     needs: build
-    if: always()
     steps:
       - name: Checkout code
         uses: actions/checkout@v2 
