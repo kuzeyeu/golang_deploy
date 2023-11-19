@@ -39,11 +39,24 @@ jobs:
         run: |-
           curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
           chmod u+x ./kustomize
-      - name: Deploy Golang app
-        run: |-
+      - name: Display current state
+        run: |
           kubectl get deployments,pods -n golang-hello
-          ./kustomize build . | kubectl apply -f -
-          kubectl rollout restart deployment golang-hello -n golang-hello
-          kubectl rollout -n golang-hello status deployment/golang-hello
-          kubectl get deployments,pods -n golang-hello
-
+      - name: Apply changes and restart deployment
+        run: |
+          if ./kustomize build . | kubectl apply -f -; then
+            echo "Changes applied successfully."
+            if kubectl rollout restart deployment golang-hello -n golang-hello; then
+              echo "Deployment restarted successfully."
+              kubectl rollout status deployment/golang-hello -n golang-hello
+              kubectl get deployments,pods -n golang-hello
+            else
+              echo "Failed to restart deployment."
+              #kubectl rollout undo deployment/golang-hello -n golang-hello
+              exit 1
+            fi
+          else
+            echo "Failed to apply changes using Kustomize."
+            #kubectl rollout undo deployment/golang-hello -n golang-hello
+            exit 1
+          fi
