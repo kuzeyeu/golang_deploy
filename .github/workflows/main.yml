@@ -28,7 +28,6 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/golang-hello:latest
-          #no-cache: true
 
   deploy:
     runs-on: self-hosted    
@@ -43,6 +42,9 @@ jobs:
           chmod u+x ./kustomize
       - name: Deploy Golang app
         run: |-
-          ./kustomize build . | kubectl apply --force -f -
+          kubectl get deployments,pods -n golang-hello
+          ./kustomize build . | kubectl apply -f -
+          kubectl rollout restart deployment golang-hello -n golang-hello
           kubectl rollout -n golang-hello status deployment/golang-hello
+          kubectl get deployments,pods -n golang-hello
 
