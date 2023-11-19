@@ -3,12 +3,12 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: golang-hello
+  namespace: golang-hello
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: golang-hello
-      namespace: golang-hello
   template:
     metadata:
       labels:
