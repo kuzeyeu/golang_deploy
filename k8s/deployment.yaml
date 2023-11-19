@@ -1,0 +1,27 @@
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: golang-hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: golang-hello
+      namespace: golang-hello
+  template:
+    metadata:
+      labels:
+        app: golang-hello
+    spec:
+      containers:
+      - name: golang-hello
+        image: mkuzeyeu/golang-hello:latest
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "100m"
+        imagePullPolicy: Always
+        ports:
+        - name: golang-hello
+          containerPort: 80
